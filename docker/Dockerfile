@@ -1,4 +1,4 @@
-FROM python:3.12.2-slim-bullseye AS build_wheel
+FROM python:3.13.3-slim-bullseye AS build_wheel
 
 RUN apt-get update \
     && apt-get install \
@@ -15,7 +15,7 @@ RUN python -m pip install --upgrade pip \
     && python setup.py bdist_wheel
 
 
-FROM python:3.12.2-slim-bullseye
+FROM python:3.13.3-slim-bullseye
 
 COPY --from=build_wheel /terracotta/dist/*.whl /terracotta/
 
@@ -25,6 +25,8 @@ RUN pip install --no-cache-dir --upgrade pip \
         pymysql>=1.0.0 \
         psycopg2-binary \
         gunicorn \
+        werkzeug==0.16.0 \
+        markupsafe==2.0.1 \
     && rm -rf /terracotta
 
 COPY docker/resources /

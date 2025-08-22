@@ -41,6 +41,15 @@ class TerracottaSettings(NamedTuple):
     #: Compression level of raster file in-memory cache, from 0-9
     RASTER_CACHE_COMPRESS_LEVEL: int = 9
 
+    #: The Access Key for the S3 bucket of the RasterStore:
+    RASTER_AWS_ACCESS_KEY: Optional[str] = None
+
+    #: The Secret Key for the S3 bucket of the RasterStore:
+    RASTER_AWS_SECRET_KEY: Optional[str] = None
+
+    #: The S3:// endpoint for the S3 server of the RaterStore:
+    RASTER_AWS_S3_ENDPOINT: Optional[str] = None
+
     #: Tile size to return if not given in parameters
     DEFAULT_TILE_SIZE: Tuple[int, int] = (256, 256)
 
@@ -107,8 +116,9 @@ DEPRECATION_MAP: Dict[str, str] = {
 }
 
 
-def _is_writable(path: str) -> bool:
-    return os.access(os.path.dirname(path) or os.getcwd(), os.W_OK)
+def _is_writable(path: str) -> None:
+    if not os.access(os.path.dirname(path) or os.getcwd(), os.W_OK):
+        raise ValidationError(f"Path {path} is not writable.")
 
 
 class SettingSchema(Schema):
@@ -127,6 +137,10 @@ class SettingSchema(Schema):
 
     RASTER_CACHE_SIZE = fields.Integer(validate=validate.Range(min=0))
     RASTER_CACHE_COMPRESS_LEVEL = fields.Integer(validate=validate.Range(min=0, max=9))
+
+    RASTER_AWS_ACCESS_KEY = fields.String(allow_none=True)
+    RASTER_AWS_SECRET_KEY = fields.String(allow_none=True)
+    RASTER_AWS_S3_ENDPOINT = fields.String(allow_none=True)
 
     DEFAULT_TILE_SIZE = fields.List(fields.Integer(), validate=validate.Length(equal=2))
 

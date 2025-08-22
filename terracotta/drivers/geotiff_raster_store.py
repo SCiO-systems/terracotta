@@ -58,7 +58,7 @@ def submit_to_executor(task: Callable[..., Any]) -> Future:
         future = _executor.submit(task)
     except BrokenProcessPool:
         # re-create executor and try again
-        logger.warn("Re-creating broken process pool")
+        logger.warning("Re-creating broken process pool")
         _executor = create_executor()
         future = _executor.submit(task)
 
@@ -140,6 +140,15 @@ class GeoTiffRasterStore(RasterStore):
             target_crs=self._TARGET_CRS,
             rio_env_options=self._RIO_ENV_OPTIONS,
         )
+
+        if settings.RASTER_AWS_S3_ENDPOINT is not None:
+            kwargs.update(
+                aws_s3_config=dict(
+                    aws_access_key_id=settings.RASTER_AWS_ACCESS_KEY,
+                    aws_secret_access_key=settings.RASTER_AWS_SECRET_KEY,
+                    endpoint_url=settings.RASTER_AWS_S3_ENDPOINT,
+                )
+            )
 
         cache_key = hash(ensure_hashable(kwargs))
 

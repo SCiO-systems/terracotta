@@ -18,9 +18,6 @@ long_description = re.sub(
 numpy_constraints = (
     ">=1.15",
     "!=1.17.0",
-    # TODO: drop this once all deps support numpy 2.0
-    # see https://github.com/dask/crick/issues/53
-    "<2",
 )
 numpy_version = ",".join(numpy_constraints)
 
@@ -38,10 +35,11 @@ setup(
         "Development Status :: 4 - Beta",
         "Intended Audience :: End Users/Desktop",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Framework :: Flask",
         "Operating System :: Microsoft :: Windows :: Windows 10",
         "Operating System :: MacOS :: MacOS X",
@@ -53,7 +51,7 @@ setup(
     ],
     # module
     packages=find_packages(exclude=["docs", "tests"]),
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     use_scm_version={"write_to": "terracotta/_version.py"},
     # dependencies
     setup_requires=[
@@ -67,6 +65,7 @@ setup(
         "cachetools>=3.1.0",
         "click",
         "click-spinner",
+        "color-operations",
         "flask",
         "flask_cors",
         "marshmallow>=3.0.0",
@@ -82,6 +81,7 @@ setup(
         "tqdm",
     ],
     extras_require={
+        ':python_version == "3.9"': ["numpy<2.0.0"],
         "test": [
             "pytest",
             "pytest-cov",
